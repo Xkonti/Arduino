@@ -4,11 +4,51 @@
 #include "TFT_GUI.h"
 
 TFT_GUI::TFT_GUI(uint8_t CS, uint8_t RS, uint8_t MOSI, uint8_t SCLK, uint8_t RST, uint8_t MISO) : Adafruit_ILI9340(CS, RS, MOSI, SCLK, RST, MISO) {
+	BTN_TEXT = Color565(0, 0, 0);
+	BTN_FILL = Color565(192, 192, 192);
+	BTN_FILLS = Color565(192, 192, 50);
+	BTN_BORDER = Color565(64, 64, 64);
+	BTN_BORDERS = Color565(255, 255, 255);
 	
+	MENU_BG = Color565(0, 0, 0);
+	MENU_TEXT = Color565(255, 255, 255);
+	
+	GRAPH_BG = Color565(0, 0, 0);
+	GRAPH_BORDER = Color565(128, 128, 128);
+	GRAPH_GRID = Color565(64, 64, 64);
+	GRAPH_LEGEND = Color565(128, 128, 32);
+	GRAPH_DATA1 = Color565(200, 50, 50);
+	GRAPH_DATA2 = Color565(50, 200, 50);
+	GRAPH_DATA3 = Color565(50, 50, 200);
+	
+	ERROR_BG = Color565(255, 0, 0);
+	ERROR_TEXT = Color565(255, 255, 255);
+	MSG_BG = Color565(0, 0, 0);
+	MSG_TEXT = Color565(200, 200, 255);
 }
 
 TFT_GUI::TFT_GUI(uint8_t CS, uint8_t DC, uint8_t RST) : Adafruit_ILI9340(CS, DC, RST) {
-
+	BTN_TEXT = Color565(0, 0, 0);
+	BTN_FILL = Color565(192, 192, 192);
+	BTN_FILLS = Color565(192, 192, 50);
+	BTN_BORDER = Color565(64, 64, 64);
+	BTN_BORDERS = Color565(255, 255, 255);
+	
+	MENU_BG = Color565(0, 0, 0);
+	MENU_TEXT = Color565(255, 255, 255);
+	
+	GRAPH_BG = Color565(0, 0, 0);
+	GRAPH_BORDER = Color565(128, 128, 128);
+	GRAPH_GRID = Color565(64, 64, 64);
+	GRAPH_LEGEND = Color565(128, 128, 32);
+	GRAPH_DATA1 = Color565(200, 50, 50);
+	GRAPH_DATA2 = Color565(50, 200, 50);
+	GRAPH_DATA3 = Color565(50, 50, 200);
+	
+	ERROR_BG = Color565(255, 0, 0);
+	ERROR_TEXT = Color565(255, 255, 255);
+	MSG_BG = Color565(0, 0, 0);
+	MSG_TEXT = Color565(200, 200, 255);
 }
 
 void TFT_GUI::setup(int _pinUp, int _pinDown, int _pinFeedback) {
@@ -24,9 +64,9 @@ void TFT_GUI::setup(int _pinUp, int _pinDown, int _pinFeedback) {
 }
 
 void TFT_GUI::drawError(String _description) {
-	fillScreen(ILI9340_RED);
+	fillScreen(ERROR_BG);
 	setCursor(0,0);
-	setTextColor(ILI9340_WHITE);
+	setTextColor(ERROR_TEXT);
 	setTextSize(4);
 	println("ERROR");
 	setTextSize(2);
@@ -35,9 +75,9 @@ void TFT_GUI::drawError(String _description) {
 }
 
 void TFT_GUI::drawMessage(String _title, String _description) {
-	fillScreen(ILI9340_BLACK);
+	fillScreen(MSG_BG);
 	setCursor(0,0);
-	setTextColor(ILI9340_YELLOW);
+	setTextColor(MSG_TEXT);
 	setTextSize(3);
 	println(_title);
 	setTextSize(1);
@@ -59,6 +99,12 @@ void TFT_GUI::drawButton(int _y, String _text, bool _selected) {
 	setTextColor(BTN_TEXT);
 	setTextSize(2);
 	print(_text);
+}
+
+void TFT_GUI::drawGraph(int* data, int x, int y, int w, int h, int min, int max, bool grid, bool legend) {
+
+
+
 }
 
 int TFT_GUI::getPress(int pin) {
@@ -176,7 +222,7 @@ void TFT_GUI::feedback(int _time) {
 
 //===================================================================================
 //===================================================================================
-
+/*
 
 TFT_Button::TFT_Button(TFT_GUI* _gui, int _y, String _text, bool _selected) {
 	gui = _gui;
@@ -201,7 +247,7 @@ void TFT_Button::draw() {
 	gui->print(text);
 }
 
-
+*/
 //===================================================================================
 //===================================================================================
 
@@ -302,13 +348,13 @@ void TFT_Menu::selectDown(bool _redraw) {
 }
 
 void TFT_Menu::draw() {
-	gui->fillScreen(MENU_BG);
+	gui->fillScreen(gui->MENU_BG);
 	redraw();
 }
 
 void TFT_Menu::redraw() {
 	gui->setCursor(0, 0);
-	gui->setTextColor(MENU_TEXT);
+	gui->setTextColor(gui->MENU_TEXT);
 	gui->setTextSize(2);
 	gui->print(text);
 	for (int i = 0; i < len; i++) {
@@ -333,16 +379,16 @@ int TFT_Menu::interact() {
 	
 	if (len > 0) {
 	
-		gui->drawMessage("Choosing entry", "You can choose entry using two buttons:\nUP:\n - Short[30ms] - Move selection up\n - Long[1000ms] - Cancel\nDOWN:\n - Short[30ms] - Move selection down\n - Long[1000ms] - Accept selection");
+		gui->drawMessage("Choosing entry", "You can choose entry using two buttons:\nUP:\n - Short[30ms] - Move selection up\n - Long[600ms] - Cancel\nDOWN:\n - Short[30ms] - Move selection down\n - Long[600ms] - Accept selection");
 			
 		selected = 0;
 		draw();
 		while(true) {
-			int btn = gui->getTimedPress(gui->pinUp, 30, 1000);
+			int btn = gui->getTimedPress(gui->pinUp, 30, 600);
 			if (btn == 1) selectUp(true);
 			else if (btn == 2) return 13;
 			else {
-				btn = gui->getTimedPress(gui->pinDown, 30, 1000);
+				btn = gui->getTimedPress(gui->pinDown, 30, 600);
 				if (btn == 1) selectDown(true);
 				else if (btn == 2) return selected;
 			}
@@ -387,4 +433,109 @@ void TFT_Menu::rearrange() {
 		i++;
 	}
 	selected = 0;
+}
+
+
+//===================================================================================
+//===================================================================================
+
+
+TFT_Graph::TFT_Graph(TFT_GUI* _gui, int _dataLength, int _x, int _y, int _width, int _height, bool _showGrid, bool _showLegend) {
+	gui = _gui;
+	len = _dataLength;
+	
+	data = new int[len];
+	for (int i = 0; i < len; i++) { data[i] = 0; }
+	
+	x = _x; y = _y;
+	width = _width;
+	height = _height;
+	showGrid = _showGrid;
+	showLegend = _showLegend;
+	autoZoom = true;
+	
+	calculateVZoom(!autoZoom);
+	calculateHZoom();
+}
+
+TFT_Graph::TFT_Graph(TFT_GUI* _gui, int _dataLength, int _x, int _y, int _width, int _height, int _min, int _max, bool _showGrid, bool _showLegend) {
+	gui = _gui;
+	len = _dataLength;
+	
+	data = new int[len];
+	for (int i = 0; i < len; i++) { data[i] = 0; }
+	
+	x = _x; y = _y;
+	width = _width;
+	height = _height;
+	min = _min; max = _max;
+	showGrid = _showGrid;
+	showLegend = _showLegend;
+	autoZoom = false;
+	calculateVZoom(!autoZoom);
+	calculateHZoom();
+}
+
+void TFT_Graph::draw() {
+	if (autoZoom) { calculateVZoom(!autoZoom); }
+	
+	drawBase();
+	if (showGrid) { drawGrid(); }
+	drawData();
+	if (showLegend) { drawLegend(); }
+}
+
+void TFT_Graph::push(int value) {
+	for (int i = 0; i < len - 1; i++) { data[i] = data[i+1]; }
+	data[len-1] = value;
+}
+
+
+void TFT_Graph::calculateVZoom(bool multipilerOnly) {
+	if (!multipilerOnly) {
+		int _minMax = data[0];
+		for (int i = 1; i < len; i++) { if (data[i] < _minMax) _minMax = data[i]; }
+		min = _minMax;
+		
+		_minMax = data[0];
+		for (int i = 1; i < len; i++) { if (data[i] > _minMax) _minMax = data[i]; }
+		max = _minMax;
+	}
+	
+	float _max = max;
+	float _min = min;
+	float h = height - 2;
+	float range = _max - _min + 2;
+	verticalZoom = h / range;
+}
+
+void TFT_Graph::calculateHZoom() {
+	float w = width - 2;
+	float l = len;
+	horizontalZoom = w / l;
+}
+
+void TFT_Graph::drawBase() {
+	gui->fillRect (x + 1, y + 1, width - 2, height - 2, gui->GRAPH_BG);
+	gui->drawRect (x, y, width, height, gui->GRAPH_BORDER);
+}
+
+void TFT_Graph::drawGrid() {
+	if (len > 4 && (width - 2) / 2 > len) {
+		for(int i = 1; i < len / 4; i++) { gui->drawFastVLine(x + 1 + (4 * i * horizontalZoom), y + 1, height - 2, gui->GRAPH_GRID); }
+	}
+}
+
+void TFT_Graph::drawLegend() {
+
+}
+
+void TFT_Graph::drawData() {
+	for (int i = 0; i < len - 1; i++) {
+		float x1 = x + 1 + (i * horizontalZoom);
+		float y1 = y + 1 + ((max - data[i] + 1) * verticalZoom);
+		float x2 = x + 1 + ((i + 1) * horizontalZoom);
+		float y2 = y + 1 + ((max - data[(i + 1)] + 1) * verticalZoom);
+		gui->drawLine(x1, y1, x2, y2, gui->GRAPH_DATA1);
+	}
 }

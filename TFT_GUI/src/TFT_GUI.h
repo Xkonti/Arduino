@@ -17,17 +17,51 @@
     #define F(string_literal) string_literal
 #endif
 
+/*
 #define	BTN_TEXT		0x0000
 #define	BTN_FILL		0xAAAA
 #define	BTN_FILLS		0xCCCC
 #define	BTN_BORDER		0x3333
 #define	BTN_BORDERS		0xFFFF
+
 #define	MENU_BG			0x0000
 #define	MENU_TEXT		0xFFFF
 
+#define	GRAPH_BG		0x0000
+#define	GRAPH_GRID		0x2222
+#define	GRAPH_LEGEND	0x2222
+#define	GRAPH_DATA1		0x2222
+#define	GRAPH_DATA2		0x2222
+#define	GRAPH_DATA3		0x2222
+*/
 class TFT_GUI : public Adafruit_ILI9340 {
 
 public:
+	// COLORS
+	uint16_t BTN_TEXT;
+	uint16_t BTN_FILL;
+	uint16_t BTN_FILLS;
+	uint16_t BTN_BORDER;
+	uint16_t BTN_BORDERS;
+	
+	uint16_t MENU_BG;
+	uint16_t MENU_TEXT;
+	
+	uint16_t GRAPH_BG;
+	uint16_t GRAPH_BORDER;
+	uint16_t GRAPH_GRID;
+	uint16_t GRAPH_LEGEND;
+	uint16_t GRAPH_DATA1;
+	uint16_t GRAPH_DATA2;
+	uint16_t GRAPH_DATA3;
+	
+	uint16_t ERROR_BG;
+	uint16_t ERROR_TEXT;
+	uint16_t MSG_BG;
+	uint16_t MSG_TEXT;
+
+
+
 	int pinUp;
 	int pinDown;
 	int pinFeedback;
@@ -39,6 +73,7 @@ public:
 	void drawError(String _description);
 	void drawMessage(String _title, String _description);
 	void drawButton(int _y, String _text, bool _selected);
+	void drawGraph(int* data, int x, int y, int w, int h, int min, int max, bool grid, bool legend);
 	
 	int getPress(int pin);
 	int getPress(int pin, int _feedback);
@@ -56,7 +91,7 @@ private:
 };
 
 
-
+/*
 class TFT_Button {
 public:
 	int x, y;
@@ -68,6 +103,7 @@ public:
 private:
 	TFT_GUI* gui;
 };
+*/
 
 class TFT_Menu {
 public:
@@ -97,6 +133,45 @@ private:
 	int selected;
 	
 	void rearrange();
+};
+
+class TFT_Graph {
+public:
+	int x;
+	int y;
+	int width;
+	int height;
+	
+	int min;
+	int max;
+	float verticalZoom;
+	float horizontalZoom;
+	
+	bool showGrid;
+	bool showLegend;
+	bool autoZoom;
+	
+	TFT_Graph(TFT_GUI* gui, int _dataLength, int _x, int _y, int _width, int _height, bool _showGrid, bool _showLegend);
+	TFT_Graph(TFT_GUI* gui, int _dataLength, int _x, int _y, int _width, int _height, int _min, int _max, bool _showGrid, bool _showLegend);
+	
+	void draw();
+	
+	void push(int value);
+	
+private:
+	TFT_GUI* gui;
+
+	int* data;
+	int len;
+	
+	
+	void calculateVZoom(bool multipilerOnly);
+	void calculateHZoom();
+	
+	void drawBase();
+	void drawGrid();
+	void drawLegend();
+	void drawData();
 };
 
 #endif
